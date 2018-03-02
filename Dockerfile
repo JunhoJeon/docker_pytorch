@@ -79,7 +79,7 @@ RUN echo 'export TERM=xterm-256color' >> /root/.zshrc
 
 RUN conda update -n base conda
 RUN conda install pytorch torchvision cuda90 -c pytorch
-RUN conda install h5py opencv
+RUN conda install h5py opencv scipy
 RUN pip install --upgrade pip
 RUN pip install tensorboardX
 
