@@ -1,6 +1,8 @@
 FROM ubuntu:16.04
 MAINTAINER JunhoJeon <zwitterion27@gmail.com>
 
+# This Dockerfile is written based on nvidia/cuda/ and continuumio/miniconda3
+
 RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
     NVIDIA_GPGKEY_FPR=ae09fe4bbd223a84b2ccfce3f60f4b3d7fa2af80 && \
     apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
@@ -45,6 +47,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             libcudnn7=$CUDNN_VERSION-1+cuda9.0 && \
     rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install -y zsh tmux
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+RUN echo 'PROMPT="%{$fg[cyan]%}docker_pytorch ${PROMPT}"' >> /root/.zshrc
+RUN echo 'export TERM=xterm-256color' >> /root/.zshrc
+
+# python environment
 WORKDIR /
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -65,18 +73,15 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/bin/tini
 ENV PATH /opt/conda/bin:$PATH
 
+# Deep Learning environment
 RUN apt-get update && apt-get install -y git
 
 RUN conda update -n base conda
 RUN conda install pytorch torchvision cuda90 -c pytorch
+RUN conda install h5py opencv
 RUN pip install --upgrade pip
 RUN pip install tensorboardX
-RUN conda install h5py opencv
 
-RUN apt-get install -y zsh tmux
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
-RUN echo 'PROMPT="%{$fg[cyan]%}docker_pytorch ${PROMPT}"' >> /root/.zshrc
-RUN echo 'export TERM=xterm-256color' >> /root/.zshrc
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /root
