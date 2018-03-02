@@ -47,10 +47,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             libcudnn7=$CUDNN_VERSION-1+cuda9.0 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y zsh tmux
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
-RUN echo 'PROMPT="%{$fg[cyan]%}docker_pytorch ${PROMPT}"' >> /root/.zshrc
-RUN echo 'export TERM=xterm-256color' >> /root/.zshrc
 
 # python environment
 WORKDIR /
@@ -75,6 +71,11 @@ ENV PATH /opt/conda/bin:$PATH
 
 # Deep Learning environment
 RUN apt-get update && apt-get install -y git
+
+RUN apt-get install -y zsh tmux
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+RUN echo 'PROMPT="%{$fg[cyan]%}docker_pytorch ${PROMPT}"' >> /root/.zshrc
+RUN echo 'export TERM=xterm-256color' >> /root/.zshrc
 
 RUN conda update -n base conda
 RUN conda install pytorch torchvision cuda90 -c pytorch
